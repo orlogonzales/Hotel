@@ -16,7 +16,7 @@ public class TesteAction implements Action {
 			HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher rd = request.getRequestDispatcher("/reservas.jsp");
 		rd.forward(request, response);
-
+		System.out.println("testando");
 	}
 
 }
