@@ -10,7 +10,7 @@
 	</head>
 	<body>
 		<c:import url="cabecalho.jsp"/>
-		<p>Preencha os campos abaixo para fazer uma reserva:</p>
+		<p>${param.nome},preencha os campos abaixo para fazer uma reserva:</p>
 		<form method="post" action="controller" id="formReserva">  <%-- Nome da classe controladora na action (nunca muda) --%>
 			<p>Nome:<input type="text" id="nome"></p>
 			<p>Endereço:<input type="text" id="endereco"></p>
