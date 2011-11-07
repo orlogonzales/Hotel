@@ -19,7 +19,7 @@ public class Controller extends HttpServlet {
 		String logica = request.getParameter("action");
 		String pacoteBase = "br.edu.mackenzie.controller.action.impl.";
 		try {
-			Action action = (Action) Class.forName(pacoteBase + logica)
+			Action action = (Action) Class.forName(pacoteBase+logica)
 					.newInstance();
 			action.executar(request, response);
 		} catch (ClassNotFoundException e) {
