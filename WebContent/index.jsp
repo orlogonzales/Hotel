@@ -7,6 +7,7 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<title>Hotel Mackenzie</title>
 		<link type="text/css" href="common.css" rel="stylesheet">
+		<!-- Comentário teste para commit -->
 	</head>
 	<body>
 		<c:import url="cabecalho.jsp"/>
