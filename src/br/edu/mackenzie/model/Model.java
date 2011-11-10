@@ -63,27 +63,34 @@ public abstract class Model {
 	
 	/**
 	 * Obtem um registro passando-se a chave primaria
-	 * TODO Tratar SQLException
+	 * 
 	 * @param id
 	 * @throws SQLException
 	 */
-	private void _getRegister(int id) throws SQLException{
+	private void _getRegister(int id){
 		String sql = "select * from ? where ? = ?" ;
-		PreparedStatement stmt = this.connection.prepareStatement(sql);
-		stmt.setString(1, this.tableName + "_tb" ) ;
-		stmt.setString(2, this.tableName + "_id" ) ;
-		stmt.setInt(3, id) ;
-		ResultSet rs = stmt.executeQuery() ;
-		ListIterator<FieldDb> i = this.table_fields.listIterator();
-		FieldDb field ;
-		if ( rs.next() ){
-			this._exists = true ;
-			while ( i.hasNext() ){
-				field = (FieldDb) i.next() ;
-				field.setValue(rs.getString(field.getField())) ;
+		PreparedStatement stmt;
+		try {
+			stmt = this.connection.prepareStatement(sql);
+			stmt.setString(1, this.tableName + "_tb" ) ;
+			stmt.setString(2, this.tableName + "_id" ) ;
+			stmt.setInt(3, id) ;
+			ResultSet rs = stmt.executeQuery() ;
+			ListIterator<FieldDb> i = this.table_fields.listIterator();
+			FieldDb field ;
+			if ( rs.next() ){
+				this._exists = true ;
+				while ( i.hasNext() ){
+					field = (FieldDb) i.next() ;
+					field.setValue(rs.getString(field.getField())) ;
+				}
 			}
+			rs.close();
+		} catch (SQLException e) {
+			// TODO Tratar exceção SQL
+			e.printStackTrace();
 		}
-		rs.close();
+		
 	}
 	
 	/**
