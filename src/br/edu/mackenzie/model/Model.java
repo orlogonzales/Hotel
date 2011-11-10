@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.ListIterator;
 
 import br.edu.mackenzie.dao.ConnectionFactory;
 import br.edu.mackenzie.dao.FieldDb;
@@ -21,10 +22,9 @@ public abstract class Model {
 	
 	/**
 	 * Nome da tabela no banco
-	 * Por convençao, a tabela deve ter o nome "nome_da_tabela" + "_tb"
+	 * Por convençao, a tabela deve ter o nome "nomeDaClasse" + "_tb"
 	 */
-	// TODO Tirar o nome da classe do pacote
-	private String tableName = this.getClass().getName().toLowerCase() ;
+	private String tableName = this.tableName.substring(this.tableName.lastIndexOf(".")+1) ;
 	
 	/**
 	 * Lista de campos da tabela
@@ -74,7 +74,7 @@ public abstract class Model {
 		stmt.setString(2, this.tableName + "_id" ) ;
 		stmt.setInt(3, id) ;
 		ResultSet rs = stmt.executeQuery() ;
-		Iterator i = this.table_fields.listIterator();
+		ListIterator<FieldDb> i = this.table_fields.listIterator();
 		FieldDb field ;
 		if ( rs.next() ){
 			this._exists = true ;
@@ -172,7 +172,7 @@ public abstract class Model {
 	public boolean save(){
 		String sql = "";
 		FieldDb field, primaryKey = null ;
-		Iterator i = this.table_fields.iterator() ;
+		ListIterator<FieldDb> i = this.table_fields.listIterator() ;
 		
 		if ( this._exists ){
 			sql += "UPDATE " + this.tableName + " " ;
@@ -205,7 +205,7 @@ public abstract class Model {
 			sql += ") VALUES (" ;
 			
 			// Resetando o iterador
-			i = this.table_fields.iterator() ;
+			i = this.table_fields.listIterator() ;
 			
 			while ( i.hasNext() ){
 				field = (FieldDb) i.next() ;
@@ -216,14 +216,13 @@ public abstract class Model {
 					}
 				}
 			}
-			
 			sql += ")" ;
 		}
 		
 		// Preparando o statement
 		try {
 			PreparedStatement stmt = this.connection.prepareStatement(sql) ;
-			i = this.table_fields.iterator() ;
+			i = this.table_fields.listIterator() ;
 			
 			// Contador para substituicao dos '?' pelos valores
 			int counter = 1 ;
@@ -247,7 +246,7 @@ public abstract class Model {
 			// Atualizando o valor do id caso o registro ainda nao exista
 			if ( ! this._exists ) {
 				ResultSet rs = stmt.getGeneratedKeys() ;
-				i = this.table_fields.iterator() ;
+				i = this.table_fields.listIterator() ;
 				if ( rs != null && rs.next() ) {
 					while ( i.hasNext() ) {
 						field = (FieldDb) i.next() ;
@@ -257,15 +256,11 @@ public abstract class Model {
 						}
 					}
 				}
-				
 				this._exists = true ;
 			}
-			
 			return execute ;
 		} catch (SQLException e){
 			return false ;
 		}
-		
 	}
-	
 }
