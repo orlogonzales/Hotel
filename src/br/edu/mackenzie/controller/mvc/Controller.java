@@ -27,7 +27,6 @@ public class Controller extends HttpServlet {
 			System.out.println("Erro ao instanciar a Action");
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
