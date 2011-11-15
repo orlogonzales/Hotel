@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import br.edu.mackenzie.controller.action.Action;
-import br.edu.mackenzie.model.Usuario;
+import br.edu.mackenzie.model.*;
 
 public class FazerReserva implements Action {
 
@@ -18,33 +18,14 @@ public class FazerReserva implements Action {
 		PrintWriter out = response.getWriter() ;
 		out.println("OK---2") ;
 		// Testes do model
-		Usuario u;
 		try {
-			u = new Usuario() ;
-			u.set("endereco", "Estr. Tenente marques") ;
-			//u.set("nome", "João da Silva") ;
-			if ( u.is_valid() ){
-				out.println("É válido!!!") ;
-			}
-			else {
-				out.println("Não é valido!!") ;
-			}
-			//u.set( "nome" , "Bianca Rodrigues da Silva" ) ;
-			//u.set( "telefone" , "75054139" ) ;
-			u.save() ;
-			
-			if ( u.exists() ){
-				out.println(u.get("nome") + " - " + u.get("telefone")) ;
-				out.println(u.getPrimaryKey()) ;
-				//u.remove() ;
-			}
-			else {
-				out.println("Não existe!") ;
-			}
+			Cliente c = new Cliente(2) ;
+			c.remove() ;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		
 	}
 	

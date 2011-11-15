@@ -1,27 +1,18 @@
 package br.edu.mackenzie.model;
 
-public class Quarto {
-	/*
-	 * 
-#QUARTO:
-#PREÇO
-#CAFÉ DA MANHÃ (bool – incluso ou não)
-#FRIGOBAR(bool – tem ou não)
-#BANHEIRA(bool – tem ou não)
-#NÚMERO DE HÓSPEDES
-i#sRESERVADO(bool)
+import java.sql.SQLException;
 
-CREATE  TABLE `hotel_db`.`quarto_tb` (
-  `numero` INT NOT NULL,
-  `preco` DOUBLE NOT NULL ,
-  `cafe` TINYINT(1)  NOT NULL ,
-  `frigobar` TINYINT(1)  NOT NULL ,
-  `banheira` TINYINT(1)  NOT NULL ,
-  `numeroHospedes` INT NOT NULL ,
-  `nome` VARCHAR(45) NOT NULL ,
-PRIMARY KEY (`id`) )
-DEFAULT CHARACTER SET = utf8;
+public class Quarto extends Model {
 
-	 */
+	public Quarto() throws SQLException {
+		super();
+	}
+	
+	public Quarto(int id) throws SQLException {
+		super(id);
+	}
+	
+	@Override
+	protected String getTableName() { return "quartos_tb" ; }
 
 }
