@@ -21,7 +21,7 @@ public abstract class Model {
 	
 	/**
 	 * Nome da tabela no banco
-	 * Por convenao, a tabela deve ter o nome "nome_da_tabela" + "_tb"
+	 * Por convenï¿½ao, a tabela deve ter o nome "nome_da_tabela" + "_tb"
 	 */
 	// TODO Tirar o nome da classe do pacote
 	private String tableName = this.getClass().getName().toLowerCase() ;
@@ -44,7 +44,7 @@ public abstract class Model {
 	 */
 	private void _populateConfig() throws SQLException {
 		Statement stmt = (Statement) this.connection.createStatement() ;
-		ResultSet rs = stmt.executeQuery("desc " + this.tableName) ;
+		ResultSet rs = stmt.executeQuery("desc " + this.tableName + "_tb" ) ;
 		FieldDb field ;
 		
 		// Percorrendo os registros encontrados
@@ -54,6 +54,7 @@ public abstract class Model {
 			field.setType(rs.getString("type"));
 			field.setNull(rs.getString("null"));
 			field.setPrimaryKey(rs.getString("KEY"));
+			//System.out.println(rs.getString("field") + "-" + rs.getString("type") + "-" + rs.getString("null") );
 			this.table_fields.add(field);
 		}
 		
@@ -68,11 +69,10 @@ public abstract class Model {
 	 * @throws SQLException
 	 */
 	private void _getRegister(int id) throws SQLException{
-		String sql = "select * from ? where ? = ?" ;
-		PreparedStatement stmt = this.connection.prepareStatement(sql);
-		stmt.setString(1, this.tableName + "_tb" ) ;
-		stmt.setString(2, this.tableName + "_id" ) ;
-		stmt.setInt(3, id) ;
+		String sql = "select * from " + this.tableName + "_tb where " + this.tableName + "_id = ?" ;
+		PreparedStatement stmt = this.connection.prepareStatement(sql) ;
+		stmt.setInt(1, id) ;
+		System.out.println(stmt.toString());
 		ResultSet rs = stmt.executeQuery() ;
 		Iterator i = this.table_fields.listIterator();
 		FieldDb field ;
@@ -81,7 +81,11 @@ public abstract class Model {
 			while ( i.hasNext() ){
 				field = (FieldDb) i.next() ;
 				field.setValue(rs.getString(field.getField())) ;
+				System.out.println(field.getField() + ": " + rs.getString(field.getField()));
 			}
+		}
+		else {
+			this._exists = false ;
 		}
 		rs.close();
 	}
@@ -166,6 +170,29 @@ public abstract class Model {
 	}
 	
 	/**
+	 * Verifica se o registro existe
+	 */
+	public boolean exists(){
+		System.out.println("False: " + this._exists );
+		return this._exists ;
+	}
+	
+	/**
+	 * Remove o registro do banco
+	 * @throws SQLException 
+	 */
+	public boolean remove() throws SQLException {
+		if ( this._exists ) {
+			FieldDb primary_key = this._getField( this.tableName + "_id" ) ;
+			String sql = "delete from " + this.tableName + "_tb where " + primary_key.getField() + "=" + primary_key.getValue() ;
+			Statement stmt = (Statement) this.connection.createStatement();
+			//System.out.println(stmt.toString());
+			return stmt.execute(sql) ;
+		}
+		return false;
+	}
+	
+	/**
 	 * Salva os dados no banco
 	 * @author	alissonperez
 	 */
@@ -175,23 +202,25 @@ public abstract class Model {
 		Iterator i = this.table_fields.iterator() ;
 		
 		if ( this._exists ){
-			sql += "UPDATE " + this.tableName + " " ;
+			sql += "UPDATE " + this.tableName + "_tb SET " ;
 			
 			while ( i.hasNext() ){
 				field = (FieldDb) i.next() ;
 				if ( field.isPrimaryKey() ){
 					primaryKey = field ;
 				}
-				sql += field.getField() + " = ?" ;
-				if ( i.hasNext() ){
-					sql += ", " ;
+				else {
+					sql += field.getField() + " = ?" ;
+					if ( i.hasNext() ){
+						sql += ", " ;
+					}
 				}
 			}
 
-			sql += "where " + this.tableName + "_id = ?" ; 
+			sql += " WHERE " + this.tableName + "_id = ?" ; 
 		}
 		else {
-			sql += "INSERT " + this.tableName + " (" ;
+			sql += "INSERT INTO " + this.tableName + "_tb (" ;
 			while ( i.hasNext() ){
 				field = (FieldDb) i.next() ;
 				if ( ! field.isPrimaryKey() ) {
@@ -222,7 +251,7 @@ public abstract class Model {
 		
 		// Preparando o statement
 		try {
-			PreparedStatement stmt = this.connection.prepareStatement(sql) ;
+			PreparedStatement stmt = this.connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS ) ;
 			i = this.table_fields.iterator() ;
 			
 			// Contador para substituicao dos '?' pelos valores
@@ -240,19 +269,20 @@ public abstract class Model {
 			if ( this._exists && primaryKey != null ) {
 				stmt.setString( counter , primaryKey.getValue() ) ;
 			}
-
+			
 			//Executando a query
-			boolean execute = stmt.execute() ;
+			//System.out.println(stmt.toString());
+			int execute = stmt.executeUpdate() ;
 			
 			// Atualizando o valor do id caso o registro ainda nao exista
-			if ( ! this._exists ) {
+			if ( ! this._exists && execute > 0 ) {
 				ResultSet rs = stmt.getGeneratedKeys() ;
 				i = this.table_fields.iterator() ;
 				if ( rs != null && rs.next() ) {
 					while ( i.hasNext() ) {
 						field = (FieldDb) i.next() ;
 						if ( field.isPrimaryKey() ) {
-							field.setValue(rs.getString(field.getField())) ;
+							field.setValue(rs.getString(1)) ;
 							break ;
 						}
 					}
@@ -261,7 +291,7 @@ public abstract class Model {
 				this._exists = true ;
 			}
 			
-			return execute ;
+			return execute > 0;
 		} catch (SQLException e){
 			return false ;
 		}

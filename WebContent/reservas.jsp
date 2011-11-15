@@ -11,7 +11,7 @@
 	<body>
 		<c:import url="cabecalho.jsp"/>
 		<p>${param.nome},preencha os campos abaixo para fazer uma reserva:</p>
-		<form method="post" action="controller" id="formReserva">  <%-- Nome da classe controladora na action (nunca muda) --%>
+		<form method="post" action="/Hotel/controller" id="formReserva">  <%-- Nome da classe controladora na action (nunca muda) --%>
 			<p>Nome:<input type="text" id="nome"></p>
 			<p>Endereço:<input type="text" id="endereco"></p>
 			<p>Estado:<input type="text" id="estado"></p>
@@ -26,7 +26,7 @@
 				</select>
 			</p>
 			<p><input type="submit" value="Fazer Reserva"></p>
-			<input type="hidden" value="FazerReserva" id="logica"> <%-- Nome da classe action (input necessário com id sempre o mesmo : logica) --%>
+			<input type="hidden" name="action" value="FazerReserva" id="logica"> <%-- Nome da classe action (input necessário com id sempre o mesmo : logica) --%>
 		</form>
 		<c:import url="rodape.jsp"/>
 	</body>
