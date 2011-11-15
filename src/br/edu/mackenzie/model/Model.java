@@ -25,7 +25,7 @@ public abstract class Model {
 	 * Nome da tabela no banco
 	 * Por conven�ao, a tabela deve ter o nome "nome_da_tabela" + "_tb"
 	 */
-	private String tableName = null ;
+	private String tableName = this.getClass().getName() ;
 	
 	/**
 	 * Nome da chave primária da tabela
@@ -131,7 +131,9 @@ public abstract class Model {
 	 * @throws SQLException
 	 */
 	public Model(int id) throws SQLException {
-		this.tableName = this.getTableName() ;
+		tableName = this.tableName.substring(this.tableName
+				.lastIndexOf(".") + 1); // arruma o nome da Tabela ( tira os
+		// pacotes)
 		this._startConnection() ;
 		this._populateConfig();
 		
@@ -145,7 +147,9 @@ public abstract class Model {
 	 * @author	alissonperez
 	 */
 	public Model() throws SQLException {
-		this.tableName = this.getTableName() ;
+		tableName = this.tableName.substring(this.tableName
+				.lastIndexOf(".") + 1); // arruma o nome da Tabela ( tira os
+		// pacotes)
 		this._startConnection() ;
 		this._populateConfig() ;
 	}

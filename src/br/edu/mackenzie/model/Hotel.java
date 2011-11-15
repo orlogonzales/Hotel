@@ -1,6 +1,7 @@
 package br.edu.mackenzie.model;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import com.mysql.jdbc.Connection;
 
@@ -21,10 +22,12 @@ public class Hotel extends Model {
 
 	/**
 	 * Retorna a lista de hotéis
+	 * @throws SQLException 
 	 */
-	public ArrayList<Hotel> getHoteis() {
+	public ArrayList<Hotel> getHoteis() throws SQLException {
 		ConnectionFactory factory = ConnectionFactory.getInstance() ;
 		Connection connection = (Connection) factory.getConnection() ;
+		return null;
 		
 	}
 }
