@@ -4,296 +4,347 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.ListIterator;
+import java.util.Set;
 
 import br.edu.mackenzie.dao.ConnectionFactory;
 import br.edu.mackenzie.dao.FieldDb;
 
 import com.mysql.jdbc.Statement;
 
+//TODO Fazer método Populate para popular os valores do objeto com um recordset
 public abstract class Model {
-
+	
 	/**
 	 * Conexao com o banco
 	 */
-	private Connection connection;
-
+	private Connection connection ;
+	
 	/**
-	 * Nome da tabela no banco Por conven�ao, a tabela deve ter o nome
-	 * "nomeDaClasse" + "_tb"
+	 * Nome da tabela no banco
+	 * Por conven�ao, a tabela deve ter o nome "nome_da_tabela" + "_tb"
 	 */
-	private String tableName = this.getClass().getName();
-
+	private String tableName = null ;
+	
 	/**
-	 * Lista de campos da tabela
-	 * 
-	 * @todo Alterar para HashMap
+	 * Nome da chave primária da tabela
 	 */
-	// TODO Alterar para HashMap
-	private ArrayList<FieldDb> table_fields = new ArrayList<FieldDb>();
-
+	private String primaryKeyName = null ;
+	
+	/**
+	 * Lista de campos da tabela usando HashMap
+	 */
+	public HashMap<String, FieldDb> tableFields = new HashMap<String, FieldDb>() ;
+	
 	/**
 	 * Determina se o registro existe.
 	 */
-	private boolean _exists = false;
-
+	private boolean _exists = false ;
+	
 	/**
-	 * Popula o atributo table_fields com os campos da tabela
-	 * 
-	 * @throws SQLException
+	 * Retorna o nome da tabela
+	 */
+	protected abstract String getTableName() ;
+	
+	/**
+	 * Popula o atributo tableFields com os campos da tabela
+	 * @throws SQLException 
 	 */
 	private void _populateConfig() throws SQLException {
-		Statement stmt = (Statement) this.connection.createStatement();
-		ResultSet rs = stmt.executeQuery("desc " + this.tableName + "_tb");
-		FieldDb field;
-
+		Statement stmt = (Statement) this.connection.createStatement() ;
+		ResultSet rs = stmt.executeQuery( "desc " + this.tableName ) ;
+		FieldDb field ;
+		
 		// Percorrendo os registros encontrados
-		while (rs.next()) {
-			field = new FieldDb();
+		while ( rs.next() ){
+			field = new FieldDb() ;
+			field.setValue(null) ;
 			field.setField(rs.getString("field"));
 			field.setType(rs.getString("type"));
 			field.setNull(rs.getString("null"));
 			field.setPrimaryKey(rs.getString("KEY"));
-			this.table_fields.add(field);
-			System.out.println(field.getField());
+			if ( field.isPrimaryKey() ){
+				//System.out.println("PK: " + field.getField())
+				this.primaryKeyName = rs.getString("field") ;
+			}
+			//System.out.println(rs.getString("field") + "-" + rs.getString("type") + "-" + rs.getString("null") );
+			this.tableFields.put( rs.getString("field") , field) ;
 		}
-
+		
 		rs.close();
 		stmt.close();
 	}
-
+	
 	/**
 	 * Obtem um registro passando-se a chave primaria
-	 * 
+	 * TODO Tratar SQLException
 	 * @param id
 	 * @throws SQLException
 	 */
-	private void _getRegister(int id) {
-		String sql = "select * from ? where ? = ?";
-		PreparedStatement stmt;
-		try {
-			stmt = this.connection.prepareStatement(sql);
-			stmt.setString(1, this.tableName + "_tb");
-			stmt.setString(2, this.tableName + "_id");
-			stmt.setInt(3, id);
-			ResultSet rs = stmt.executeQuery();
-			ListIterator<FieldDb> i = this.table_fields.listIterator();
-			FieldDb field;
-			if (rs.next()) {
-				this._exists = true;
-				while (i.hasNext()) {
-					field = (FieldDb) i.next();
-					field.setValue(rs.getString(field.getField()));
-				}
+	private void _getRegister(int id) throws SQLException{
+		String sql = "select * from " + this.tableName + " where " + this.primaryKeyName + " = ?" ;
+		PreparedStatement stmt = this.connection.prepareStatement(sql) ;
+		stmt.setInt(1, id) ;
+		System.out.println(stmt.toString());
+		ResultSet rs = stmt.executeQuery() ;
+		Set<String> key_fields = this.tableFields.keySet() ;
+		Iterator<String> i = key_fields.iterator();
+		FieldDb field ;
+		if ( rs.next() ){
+			this._exists = true ;
+			while ( i.hasNext() ){
+				field = (FieldDb) this.tableFields.get(i.next()) ;
+				field.setValue(rs.getString(field.getField())) ;
+				System.out.println(field.getField() + ": " + rs.getString(field.getField()));
 			}
-			rs.close();
-		} catch (SQLException e) {
-			// TODO Tratar exce��o SQL
-			e.printStackTrace();
 		}
-
+		else {
+			this._exists = false ;
+		}
+		rs.close();
 	}
-
+	
 	/**
 	 * Inicia uma conexao
-	 * 
-	 * @author alissonperez
-	 * @throws SQLException
+	 * @author	alissonperez
+	 * @throws	SQLException 
 	 */
-	private void _startConnection() throws SQLException {
-		ConnectionFactory factory = ConnectionFactory.getInstance();
-		this.connection = factory.getConnection();
+	private void _startConnection() throws SQLException{
+		ConnectionFactory factory = ConnectionFactory.getInstance() ;
+		this.connection = factory.getConnection() ; 
 	}
-
+	
 	/**
 	 * Retorna o objeto FieldDb
-	 * 
-	 * @author alissonperez
-	 * @param name
-	 *            Nome do campo que queremos buscar
+	 * @author	alissonperez
+	 * @param	name	Nome do campo que queremos buscar
 	 */
-	private FieldDb _getField(String name) {
-		Iterator<FieldDb> i = this.table_fields.iterator();
-		FieldDb field = null;
-		while (i.hasNext()) {
-			field = (FieldDb) i.next();
-			if (field.getField().equals(name)) {
-				break;
-			}
-		}
-		return field;
+	private FieldDb _getField( String name ){
+		return this.tableFields.get( name ) ;
 	}
-
+	
 	/**
-	 * Construtor que inicializa a conexao, popula a lista de campos da tabela e
-	 * obtem o registro caso o id do campo seja passado
-	 * 
+	 * Construtor que inicializa a conexao, popula a lista de campos da tabela e obtem o registro
+	 * caso o id do campo seja passado
 	 * @param id
 	 * @throws SQLException
 	 */
-	public Model(int id) {
-		try {
-			this._startConnection();
-			this._populateConfig();
-
-			if (id > 0) {
-				this._getRegister(id);
-			}
-		} catch (SQLException e) {
-			// TODO: tratar SQL exception
+	public Model(int id) throws SQLException {
+		this.tableName = this.getTableName() ;
+		this._startConnection() ;
+		this._populateConfig();
+		
+		if (id > 0){
+			this._getRegister(id);
 		}
 	}
-
+	
 	/**
 	 * Sobrecarga do construtor quando nao se tem id (um novo objeto)
-	 * 
-	 * @author alissonperez
+	 * @author	alissonperez
 	 */
-	public Model() {
-		try {
-			tableName = this.tableName.substring(this.tableName
-					.lastIndexOf(".") + 1); // arruma o nome da Tabela ( tira os
-											// pacotes)
-			this._startConnection();
-			this._populateConfig();
-		} catch (SQLException e) {
-			// TODO Tratar excecao sql
-			e.printStackTrace();
-		}
-
+	public Model() throws SQLException {
+		this.tableName = this.getTableName() ;
+		this._startConnection() ;
+		this._populateConfig() ;
 	}
-
+	
 	/**
 	 * Seta o valor no campo especificado no parametro
-	 * 
-	 * @author alissonperez
-	 * @param name
-	 *            Nome do campo
-	 * @param value
-	 *            Valor do campo
+	 * @author	alissonperez
+	 * @param	name	Nome do campo
+	 * @param	value	Valor do campo
 	 */
-	public boolean set(String name, String value) {
-		FieldDb field = this._getField(name);
-		if (field != null && !field.isPrimaryKey()) {
-			field.setValue(value);
-			return true;
+	public boolean set( String name, String value ){
+		FieldDb field = this._getField(name) ;
+		if ( field != null && ! field.isPrimaryKey() ) {
+			field.setValue(value) ;			
+			return true ;
+		}
+		return false ;
+	}
+	
+	/**
+	 * Retorna o valor de um campo
+	 * @author	alissonperez
+	 * @param	name	Nome do campo
+	 */
+	public String get( String name ) {
+		FieldDb field = this._getField(name) ;
+		if ( field != null ){
+			return field.getValue() ;
+		}
+		return null ;
+	}
+	
+	/**
+	 * Retorna o valor da chave primária
+	 * @author	AlissonPerez
+	 * @return	int
+	 */
+	public String getPrimaryKey(){
+		if ( this._exists ){
+			FieldDb field = this.tableFields.get( this.primaryKeyName ) ;
+			return field.getValue() ;
+		}
+		return "" ;
+	}
+	
+	/**
+	 * Verifica se o registro existe
+	 */
+	public boolean exists(){
+		//System.out.println("False: " + this._exists );
+		return this._exists ;
+	}
+	
+	/**
+	 * Validação simples do registro
+	 * @author	alissonperez
+	 * @return	boolean	Se o registro é valido para gravação ou não
+	 */
+	//TODO Incluir mensagens de erro em uma variável
+	public boolean is_valid(){
+		Set<String> key_fields = this.tableFields.keySet() ;
+		Iterator i = key_fields.iterator() ;
+		FieldDb field ;
+		while ( i.hasNext() ){
+			field = this.tableFields.get(i.next()) ;
+			if ( ! field.isPrimaryKey() ) {
+				// System.out.println("NULL: " + field.isNull() + "-" + field.getValue() + " - " + field.getField() );
+				if ( ! field.isNull() && field.getValue() == null ) {
+					return false ;
+				}
+			}
+		}
+		return true ;
+	}
+	
+	/**
+	 * Remove o registro do banco
+	 * @throws SQLException 
+	 */
+	public boolean remove() throws SQLException {
+		if ( this._exists ) {
+			FieldDb primary_key = this._getField( this.primaryKeyName ) ;
+			String sql = "delete from " + this.tableName + " where " + primary_key.getField() + "=" + primary_key.getValue() ;
+			Statement stmt = (Statement) this.connection.createStatement();
+			//System.out.println(stmt.toString());
+			return stmt.execute(sql) ;
 		}
 		return false;
 	}
-
-	/**
-	 * Retorna o valor de um campo
-	 * 
-	 * @author alissonperez
-	 * @param name
-	 *            Nome do campo
-	 */
-	public String get(String name) {
-		FieldDb field = this._getField(name);
-		if (field != null) {
-			return field.getValue();
-		}
-		return null;
-	}
-
+	
 	/**
 	 * Salva os dados no banco
-	 * 
-	 * @author alissonperez
+	 * @author	alissonperez
 	 */
-	public boolean save() {
+	public boolean save(){
 		String sql = "";
-		FieldDb field, primaryKey = null;
-		ListIterator<FieldDb> i = this.table_fields.listIterator();
-
-		if (this._exists) {
-			sql += "UPDATE " + this.tableName + " ";
-
-			while (i.hasNext()) {
-				field = (FieldDb) i.next();
-				if (field.isPrimaryKey()) {
-					primaryKey = field;
+		FieldDb field, primaryKey = null ;
+		
+		// Obtendo as chaves
+		Set<String> key_fields = this.tableFields.keySet() ;
+		Iterator<String> i = key_fields.iterator();
+		
+		// Caso o registro exista devemos fazer um Update
+		if ( this._exists ){
+			sql += "UPDATE " + this.tableName + " SET " ;
+			
+			while ( i.hasNext() ){
+				field = (FieldDb) this.tableFields.get(i.next()) ;
+				if ( field.isPrimaryKey() ){
+					primaryKey = field ;
 				}
-				sql += field.getField() + " = ?";
-				if (i.hasNext()) {
-					sql += ", ";
-				}
-			}
-
-			sql += "where " + this.tableName + "_id = ?";
-		} else {
-			sql += "INSERT " + this.tableName + " (";
-			while (i.hasNext()) {
-				field = (FieldDb) i.next();
-				if (!field.isPrimaryKey()) {
-					sql += field.getField();
-					if (i.hasNext()) {
-						sql += ", ";
+				else {
+					sql += field.getField() + " = ?" ;
+					if ( i.hasNext() ){
+						sql += ", " ;
 					}
 				}
 			}
 
-			sql += ") VALUES (";
-
-			// Resetando o iterador
-			i = this.table_fields.listIterator();
-
-			while (i.hasNext()) {
-				field = (FieldDb) i.next();
-				if (!field.isPrimaryKey()) {
-					sql += "?";
-					if (i.hasNext()) {
-						sql += ",";
-					}
-				}
-			}
-			sql += ")";
+			sql += " WHERE " + this.primaryKeyName + " = ?" ; 
 		}
-
+		// Caso não devemos fazer um Insert
+		else {
+			sql += "INSERT INTO " + this.tableName + " (" ;
+			while ( i.hasNext() ){
+				field = (FieldDb) this.tableFields.get(i.next()) ;
+				if ( ! field.isPrimaryKey() ) {
+					sql += field.getField() ;
+					if ( i.hasNext() ){
+						sql += ", " ;
+					}
+				}
+			}
+			
+			sql += ") VALUES (" ;
+			
+			// Resetando o iterador
+			i = key_fields.iterator() ;
+			
+			while ( i.hasNext() ){
+				field = (FieldDb) this.tableFields.get(i.next()) ;
+				if ( ! field.isPrimaryKey() ){
+					sql += "?" ;
+					if ( i.hasNext() ){
+						sql += "," ;
+					}
+				}
+			}
+			
+			sql += ")" ;
+		}
+		
 		// Preparando o statement
 		try {
-			PreparedStatement stmt = this.connection.prepareStatement(sql);
-			i = this.table_fields.listIterator();
-
+			PreparedStatement stmt = this.connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS ) ;
+			i = key_fields.iterator() ;
+			
 			// Contador para substituicao dos '?' pelos valores
-			int counter = 1;
-
+			int counter = 1 ;
+			
 			// Percorrendo os valores
 			while (i.hasNext()) {
-				field = (FieldDb) i.next();
-				if (!field.isPrimaryKey()) {
-					stmt.setString(counter++, field.getValue());
+				field = (FieldDb) this.tableFields.get(i.next()) ;
+				if ( ! field.isPrimaryKey() ) {
+					stmt.setString( counter++ , field.getValue() ) ;
 				}
 			}
-
+			
 			// Preenchendo o valor da chave primaria caso o registro exista
-			if (this._exists && primaryKey != null) {
-				stmt.setString(counter, primaryKey.getValue());
+			if ( this._exists && primaryKey != null ) {
+				stmt.setString( counter , primaryKey.getValue() ) ;
 			}
-
-			// Executando a query
-			boolean execute = stmt.execute();
-
+			
+			//Executando a query
+			//System.out.println(stmt.toString());
+			int execute = stmt.executeUpdate() ;
+			
 			// Atualizando o valor do id caso o registro ainda nao exista
-			if (!this._exists) {
-				ResultSet rs = stmt.getGeneratedKeys();
-				i = this.table_fields.listIterator();
-				if (rs != null && rs.next()) {
-					while (i.hasNext()) {
-						field = (FieldDb) i.next();
-						if (field.isPrimaryKey()) {
-							field.setValue(rs.getString(field.getField()));
-							break;
+			if ( ! this._exists && execute > 0 ) {
+				ResultSet rs = stmt.getGeneratedKeys() ;
+				i = key_fields.iterator() ;
+				if ( rs != null && rs.next() ) {
+					while ( i.hasNext() ) {
+						field = (FieldDb) this.tableFields.get( i.next() ) ;
+						if ( field.isPrimaryKey() ) {
+							field.setValue(rs.getString(1)) ;
+							break ;
 						}
 					}
 				}
-				this._exists = true;
+				
+				this._exists = true ;
 			}
-			return execute;
-		} catch (SQLException e) {
-			return false;
+			
+			return execute > 0;
+		} catch (SQLException e){
+			return false ;
 		}
+		
 	}
+	
 }
