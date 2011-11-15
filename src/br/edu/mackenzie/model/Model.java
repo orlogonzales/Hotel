@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 import br.edu.mackenzie.dao.ConnectionFactory;
 import br.edu.mackenzie.dao.FieldDb;
@@ -27,19 +29,22 @@ public abstract class Model {
 	private String tableName = this.getClass().getName().toLowerCase() ;
 	
 	/**
-	 * Lista de campos da tabela
-	 * @todo	Alterar para HashMap
+	 * Lista de campos da tabela usando HashMap
 	 */
-	// TODO Alterar para HashMap
-	private ArrayList<FieldDb> table_fields = new ArrayList<FieldDb>() ;
+	private HashMap<String, FieldDb> tableFields = new HashMap<String, FieldDb>() ;
 	
 	/**
 	 * Determina se o registro existe.
 	 */
 	private boolean _exists = false ;
+	
+	/**
+	 * Retorna o nome da tabela
+	 */
+	abstract String getTableName() ;
 
 	/**
-	 * Popula o atributo table_fields com os campos da tabela
+	 * Popula o atributo tableFields com os campos da tabela
 	 * @throws SQLException 
 	 */
 	private void _populateConfig() throws SQLException {
@@ -55,7 +60,7 @@ public abstract class Model {
 			field.setNull(rs.getString("null"));
 			field.setPrimaryKey(rs.getString("KEY"));
 			//System.out.println(rs.getString("field") + "-" + rs.getString("type") + "-" + rs.getString("null") );
-			this.table_fields.add(field);
+			this.tableFields.put( rs.getString("field") , field) ;
 		}
 		
 		rs.close();
@@ -74,12 +79,13 @@ public abstract class Model {
 		stmt.setInt(1, id) ;
 		System.out.println(stmt.toString());
 		ResultSet rs = stmt.executeQuery() ;
-		Iterator i = this.table_fields.listIterator();
+		Set<String> key_fields = this.tableFields.keySet() ;
+		Iterator i = key_fields.iterator();
 		FieldDb field ;
 		if ( rs.next() ){
 			this._exists = true ;
 			while ( i.hasNext() ){
-				field = (FieldDb) i.next() ;
+				field = (FieldDb) this.tableFields.get(i.next()) ;
 				field.setValue(rs.getString(field.getField())) ;
 				System.out.println(field.getField() + ": " + rs.getString(field.getField()));
 			}
@@ -106,15 +112,7 @@ public abstract class Model {
 	 * @param	name	Nome do campo que queremos buscar
 	 */
 	private FieldDb _getField( String name ){
-		Iterator<FieldDb> i = this.table_fields.iterator() ;
-		FieldDb field = null ;
-		while ( i.hasNext() ){
-			field = (FieldDb) i.next() ;
-			if ( field.getField().equals(name) ){
-				break ;
-			}
-		}
-		return field ;
+		return this.tableFields.get( name ) ;
 	}
 	
 	/**
@@ -124,6 +122,7 @@ public abstract class Model {
 	 * @throws SQLException
 	 */
 	public Model(int id) throws SQLException {
+		this.tableName = this.getTableName() ;
 		this._startConnection() ;
 		this._populateConfig();
 		
@@ -137,6 +136,7 @@ public abstract class Model {
 	 * @author	alissonperez
 	 */
 	public Model() throws SQLException {
+		this.tableName = this.getTableName() ;
 		this._startConnection() ;
 		this._populateConfig() ;
 	}
@@ -150,7 +150,7 @@ public abstract class Model {
 	public boolean set( String name, String value ){
 		FieldDb field = this._getField(name) ;
 		if ( field != null && ! field.isPrimaryKey() ) {
-			field.setValue(value) ;
+			field.setValue(value) ;			
 			return true ;
 		}
 		return false ;
@@ -199,13 +199,16 @@ public abstract class Model {
 	public boolean save(){
 		String sql = "";
 		FieldDb field, primaryKey = null ;
-		Iterator i = this.table_fields.iterator() ;
+		
+		// Obtendo as chaves
+		Set<String> key_fields = this.tableFields.keySet() ;
+		Iterator<String> i = key_fields.iterator();
 		
 		if ( this._exists ){
 			sql += "UPDATE " + this.tableName + "_tb SET " ;
 			
 			while ( i.hasNext() ){
-				field = (FieldDb) i.next() ;
+				field = (FieldDb) this.tableFields.get(i.next()) ;
 				if ( field.isPrimaryKey() ){
 					primaryKey = field ;
 				}
@@ -222,7 +225,7 @@ public abstract class Model {
 		else {
 			sql += "INSERT INTO " + this.tableName + "_tb (" ;
 			while ( i.hasNext() ){
-				field = (FieldDb) i.next() ;
+				field = (FieldDb) this.tableFields.get(i.next()) ;
 				if ( ! field.isPrimaryKey() ) {
 					sql += field.getField() ;
 					if ( i.hasNext() ){
@@ -234,10 +237,10 @@ public abstract class Model {
 			sql += ") VALUES (" ;
 			
 			// Resetando o iterador
-			i = this.table_fields.iterator() ;
+			i = key_fields.iterator() ;
 			
 			while ( i.hasNext() ){
-				field = (FieldDb) i.next() ;
+				field = (FieldDb) this.tableFields.get(i.next()) ;
 				if ( ! field.isPrimaryKey() ){
 					sql += "?" ;
 					if ( i.hasNext() ){
@@ -252,14 +255,14 @@ public abstract class Model {
 		// Preparando o statement
 		try {
 			PreparedStatement stmt = this.connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS ) ;
-			i = this.table_fields.iterator() ;
+			i = key_fields.iterator() ;
 			
 			// Contador para substituicao dos '?' pelos valores
 			int counter = 1 ;
 			
 			// Percorrendo os valores
 			while (i.hasNext()) {
-				field = (FieldDb) i.next() ;
+				field = (FieldDb) this.tableFields.get(i.next()) ;
 				if ( ! field.isPrimaryKey() ) {
 					stmt.setString( counter++ , field.getValue() ) ;
 				}
@@ -277,10 +280,10 @@ public abstract class Model {
 			// Atualizando o valor do id caso o registro ainda nao exista
 			if ( ! this._exists && execute > 0 ) {
 				ResultSet rs = stmt.getGeneratedKeys() ;
-				i = this.table_fields.iterator() ;
+				i = key_fields.iterator() ;
 				if ( rs != null && rs.next() ) {
 					while ( i.hasNext() ) {
-						field = (FieldDb) i.next() ;
+						field = (FieldDb) this.tableFields.get( i.next() ) ;
 						if ( field.isPrimaryKey() ) {
 							field.setValue(rs.getString(1)) ;
 							break ;
