@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -25,8 +24,12 @@ public abstract class Model {
 	 * Nome da tabela no banco
 	 * Por conven�ao, a tabela deve ter o nome "nome_da_tabela" + "_tb"
 	 */
-	// TODO Tirar o nome da classe do pacote
-	private String tableName = this.getClass().getName().toLowerCase() ;
+	private String tableName = null ;
+	
+	/**
+	 * Nome da chave primária da tabela
+	 */
+	private String primaryKeyName = null ;
 	
 	/**
 	 * Lista de campos da tabela usando HashMap
@@ -41,15 +44,15 @@ public abstract class Model {
 	/**
 	 * Retorna o nome da tabela
 	 */
-	abstract String getTableName() ;
-
+	protected abstract String getTableName() ;
+	
 	/**
 	 * Popula o atributo tableFields com os campos da tabela
 	 * @throws SQLException 
 	 */
 	private void _populateConfig() throws SQLException {
 		Statement stmt = (Statement) this.connection.createStatement() ;
-		ResultSet rs = stmt.executeQuery("desc " + this.tableName + "_tb" ) ;
+		ResultSet rs = stmt.executeQuery( "desc " + this.tableName ) ;
 		FieldDb field ;
 		
 		// Percorrendo os registros encontrados
@@ -59,6 +62,9 @@ public abstract class Model {
 			field.setType(rs.getString("type"));
 			field.setNull(rs.getString("null"));
 			field.setPrimaryKey(rs.getString("KEY"));
+			if ( field.isPrimaryKey() ){
+				this.primaryKeyName = rs.getString("field") ;
+			}
 			//System.out.println(rs.getString("field") + "-" + rs.getString("type") + "-" + rs.getString("null") );
 			this.tableFields.put( rs.getString("field") , field) ;
 		}
@@ -74,13 +80,13 @@ public abstract class Model {
 	 * @throws SQLException
 	 */
 	private void _getRegister(int id) throws SQLException{
-		String sql = "select * from " + this.tableName + "_tb where " + this.tableName + "_id = ?" ;
+		String sql = "select * from " + this.tableName + " where " + this.primaryKeyName + " = ?" ;
 		PreparedStatement stmt = this.connection.prepareStatement(sql) ;
 		stmt.setInt(1, id) ;
 		System.out.println(stmt.toString());
 		ResultSet rs = stmt.executeQuery() ;
 		Set<String> key_fields = this.tableFields.keySet() ;
-		Iterator i = key_fields.iterator();
+		Iterator<String> i = key_fields.iterator();
 		FieldDb field ;
 		if ( rs.next() ){
 			this._exists = true ;
@@ -173,7 +179,7 @@ public abstract class Model {
 	 * Verifica se o registro existe
 	 */
 	public boolean exists(){
-		System.out.println("False: " + this._exists );
+		//System.out.println("False: " + this._exists );
 		return this._exists ;
 	}
 	
@@ -183,8 +189,8 @@ public abstract class Model {
 	 */
 	public boolean remove() throws SQLException {
 		if ( this._exists ) {
-			FieldDb primary_key = this._getField( this.tableName + "_id" ) ;
-			String sql = "delete from " + this.tableName + "_tb where " + primary_key.getField() + "=" + primary_key.getValue() ;
+			FieldDb primary_key = this._getField( this.primaryKeyName ) ;
+			String sql = "delete from " + this.tableName + " where " + primary_key.getField() + "=" + primary_key.getValue() ;
 			Statement stmt = (Statement) this.connection.createStatement();
 			//System.out.println(stmt.toString());
 			return stmt.execute(sql) ;
@@ -204,8 +210,9 @@ public abstract class Model {
 		Set<String> key_fields = this.tableFields.keySet() ;
 		Iterator<String> i = key_fields.iterator();
 		
+		// Caso o registro exista devemos fazer um Update
 		if ( this._exists ){
-			sql += "UPDATE " + this.tableName + "_tb SET " ;
+			sql += "UPDATE " + this.tableName + " SET " ;
 			
 			while ( i.hasNext() ){
 				field = (FieldDb) this.tableFields.get(i.next()) ;
@@ -220,10 +227,11 @@ public abstract class Model {
 				}
 			}
 
-			sql += " WHERE " + this.tableName + "_id = ?" ; 
+			sql += " WHERE " + this.primaryKeyName + " = ?" ; 
 		}
+		// Caso não devemos fazer um Insert
 		else {
-			sql += "INSERT INTO " + this.tableName + "_tb (" ;
+			sql += "INSERT INTO " + this.tableName + " (" ;
 			while ( i.hasNext() ){
 				field = (FieldDb) this.tableFields.get(i.next()) ;
 				if ( ! field.isPrimaryKey() ) {

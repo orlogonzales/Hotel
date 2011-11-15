@@ -20,13 +20,14 @@ public class FazerReserva implements Action {
 		// Testes do model
 		Usuario u;
 		try {
-			u = new Usuario(30) ;
-			u.set( "nome" , "Alisson dos reis Perez222" ) ;
-			u.set( "telefone" , "12390381092" ) ;
+			u = new Usuario(87) ;
+			u.set("endereco", "Estr. Tenente marques") ;
+			//u.set( "nome" , "Bianca Rodrigues da Silva" ) ;
+			//u.set( "telefone" , "75054139" ) ;
 			u.save() ;
 			
 			if ( u.exists() ){
-				out.println(u.get("nome")) ;
+				out.println(u.get("nome") + " - " + u.get("telefone")) ;
 				out.println(u.get("usuarios_id")) ;
 				//u.remove() ;
 			}

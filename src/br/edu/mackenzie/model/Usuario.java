@@ -8,7 +8,7 @@ public class Usuario extends Model {
 	 * Retorna o nome da tabela do model em uso
 	 */
 	@Override
-	String getTableName() { return "usuarios" ;	}
+	protected String getTableName() { return "usuarios_tb" ; }
 	
 	public Usuario() throws SQLException {
 		super();
