@@ -20,8 +20,15 @@ public class FazerReserva implements Action {
 		// Testes do model
 		Usuario u;
 		try {
-			u = new Usuario(87) ;
+			u = new Usuario() ;
 			u.set("endereco", "Estr. Tenente marques") ;
+			//u.set("nome", "João da Silva") ;
+			if ( u.is_valid() ){
+				out.println("É válido!!!") ;
+			}
+			else {
+				out.println("Não é valido!!") ;
+			}
 			//u.set( "nome" , "Bianca Rodrigues da Silva" ) ;
 			//u.set( "telefone" , "75054139" ) ;
 			u.save() ;

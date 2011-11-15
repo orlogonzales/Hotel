@@ -58,12 +58,13 @@ public abstract class Model {
 		// Percorrendo os registros encontrados
 		while ( rs.next() ){
 			field = new FieldDb() ;
+			field.setValue(null) ;
 			field.setField(rs.getString("field"));
 			field.setType(rs.getString("type"));
 			field.setNull(rs.getString("null"));
 			field.setPrimaryKey(rs.getString("KEY"));
 			if ( field.isPrimaryKey() ){
-				//System.out.println("PK: " + field.getField());
+				//System.out.println("PK: " + field.getField())
 				this.primaryKeyName = rs.getString("field") ;
 			}
 			//System.out.println(rs.getString("field") + "-" + rs.getString("type") + "-" + rs.getString("null") );
@@ -195,6 +196,28 @@ public abstract class Model {
 	public boolean exists(){
 		//System.out.println("False: " + this._exists );
 		return this._exists ;
+	}
+	
+	/**
+	 * Validação simples do registro
+	 * @author	alissonperez
+	 * @return	boolean	Se o registro é valido para gravação ou não
+	 */
+	//TODO Incluir mensagens de erro em uma variável
+	public boolean is_valid(){
+		Set<String> key_fields = this.tableFields.keySet() ;
+		Iterator i = key_fields.iterator() ;
+		FieldDb field ;
+		while ( i.hasNext() ){
+			field = this.tableFields.get(i.next()) ;
+			if ( ! field.isPrimaryKey() ) {
+				// System.out.println("NULL: " + field.isNull() + "-" + field.getValue() + " - " + field.getField() );
+				if ( ! field.isNull() && field.getValue() == null ) {
+					return false ;
+				}
+			}
+		}
+		return true ;
 	}
 	
 	/**
