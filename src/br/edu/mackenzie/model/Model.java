@@ -34,7 +34,7 @@ public abstract class Model {
 	/**
 	 * Lista de campos da tabela usando HashMap
 	 */
-	private HashMap<String, FieldDb> tableFields = new HashMap<String, FieldDb>() ;
+	public HashMap<String, FieldDb> tableFields = new HashMap<String, FieldDb>() ;
 	
 	/**
 	 * Determina se o registro existe.
@@ -63,6 +63,7 @@ public abstract class Model {
 			field.setNull(rs.getString("null"));
 			field.setPrimaryKey(rs.getString("KEY"));
 			if ( field.isPrimaryKey() ){
+				//System.out.println("PK: " + field.getField());
 				this.primaryKeyName = rs.getString("field") ;
 			}
 			//System.out.println(rs.getString("field") + "-" + rs.getString("type") + "-" + rs.getString("null") );
@@ -173,6 +174,19 @@ public abstract class Model {
 			return field.getValue() ;
 		}
 		return null ;
+	}
+	
+	/**
+	 * Retorna o valor da chave primária
+	 * @author	AlissonPerez
+	 * @return	int
+	 */
+	public String getPrimaryKey(){
+		if ( this._exists ){
+			FieldDb field = this.tableFields.get( this.primaryKeyName ) ;
+			return field.getValue() ;
+		}
+		return "" ;
 	}
 	
 	/**

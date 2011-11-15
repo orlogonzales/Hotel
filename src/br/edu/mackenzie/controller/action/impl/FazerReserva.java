@@ -28,7 +28,7 @@ public class FazerReserva implements Action {
 			
 			if ( u.exists() ){
 				out.println(u.get("nome") + " - " + u.get("telefone")) ;
-				out.println(u.get("usuarios_id")) ;
+				out.println(u.getPrimaryKey()) ;
 				//u.remove() ;
 			}
 			else {
