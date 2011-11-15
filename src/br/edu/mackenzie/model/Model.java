@@ -13,6 +13,7 @@ import br.edu.mackenzie.dao.FieldDb;
 
 import com.mysql.jdbc.Statement;
 
+//TODO Fazer método Populate para popular os valores do objeto com um recordset
 public abstract class Model {
 	
 	/**
