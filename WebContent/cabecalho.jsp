@@ -7,7 +7,8 @@
 </header>
 <nav>
 <a href="index.jsp">Home</a>  |
-<a href="reservas.jsp">Reservas</a>  |
+<a href="controller?action=TesteAction">Reservas</a>  |
 <a href="index.jsp">Sobre</a>
+<a href="listaReserva.jsp">Listar Reservas</a>
 </nav>
 

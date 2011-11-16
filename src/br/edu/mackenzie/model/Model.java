@@ -198,7 +198,7 @@ public abstract class Model {
 	//TODO Incluir mensagens de erro em uma variável
 	public boolean is_valid(){
 		Set<String> key_fields = this.tableFields.keySet() ;
-		Iterator i = key_fields.iterator() ;
+		Iterator<String> i = key_fields.iterator() ;
 		FieldDb field ;
 		while ( i.hasNext() ){
 			field = this.tableFields.get(i.next()) ;
@@ -239,7 +239,7 @@ public abstract class Model {
 		Set<String> key_fields = this.tableFields.keySet() ;
 		
 		// Iterador
-		Iterator i = key_fields.iterator() ;
+		Iterator<String> i = key_fields.iterator() ;
 		
 		// Objeto field para setar os valores
 		FieldDb field ;

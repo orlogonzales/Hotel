@@ -31,7 +31,7 @@ public class ConnectionFactory {
 			throw new SQLException(e);
 		}
 
-		return DriverManager.getConnection("jdbc:mysql://localhost/hotel_db", "root", "123");
+		return DriverManager.getConnection("jdbc:mysql://localhost/hotel_db", "root", "");
 	}
 	
 	/**

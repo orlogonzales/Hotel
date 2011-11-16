@@ -28,14 +28,12 @@
 			<p><label for="pais">País:</label><input type="text" name="pais" id="pais" size="10"></p>
 			<p><label for="email">E-mail:</label><input type="text" name="email" id="email" size="30"></p>
 			<h2>Reserva</h2>
+ 			
 			<p><label for="hotel">Hotel:</label><select name="hotel">
 			<option value="" selected="selected"></option>
-			<%
-			ArrayList<Hotel> hoteis = Hotel.getHoteis() ;
-
-			for ( Hotel hotel : hoteis ) {
-				%><option value="<%=hotel.get("hotel_id")%>"><%=hotel.get("nome")%></option><%
-			} %>
+			<c:forEach var="nome" items="${nomes}">
+			<option value="${nome}">${nome}</option>
+			</c:forEach>
 			</select></p>
 			<p><label for="tipo_quarto">Tipo do quarto:</label><select name="tipo_quarto" id="tipo_quarto">
   					<option value=""></option>
