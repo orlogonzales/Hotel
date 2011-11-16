@@ -37,7 +37,7 @@ CREATE TABLE `clientes_tb` (
   `validadeCartao` varchar(45) DEFAULT NULL,
   `cliente_tbcol` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`cliente_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -115,9 +115,9 @@ CREATE TABLE `reservas_tb` (
   `hotel_id` int(11) NOT NULL,
   `cliente_id` int(11) NOT NULL,
   `quarto_id` int(11) NOT NULL,
-  `data_reserva` date DEFAULT NULL,
+  `check_in` date DEFAULT NULL,
+  `check_out` date DEFAULT NULL,
   `cafe` enum('yes','no') DEFAULT 'no',
-  `periodo_dias` int(11) DEFAULT NULL,
   PRIMARY KEY (`reserva_id`),
   KEY `cliente_id` (`cliente_id`),
   KEY `hotel_id` (`hotel_id`),
@@ -146,4 +146,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2011-11-15 16:47:09
+-- Dump completed on 2011-11-16  0:38:05

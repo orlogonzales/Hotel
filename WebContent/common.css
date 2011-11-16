@@ -57,18 +57,16 @@ table {
 .content header h1 { color: #FFF; font-size: 26px; font-family:"arial black"; }
 .content header h2 { color: #000; font-size: 18px; padding-top: 5px; }
 
-
-
 /* Navegacao */
-.content nav { background: #FF3030; /* Old browsers */
-background: -moz-linear-gradient(top,  #FF3030 0%, #ffffff 100%); /* FF3.6+ */
-background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FF3030), color-stop(100%,#ffffff)); /* Chrome,Safari4+ */
-background: -webkit-linear-gradient(top,  #FF3030 0%,#ffffff 100%); /* Chrome10+,Safari5.1+ */
-background: -o-linear-gradient(top, #FF3030 0%,#ffffff 100%); /* Opera 11.10+ */
-background: -ms-linear-gradient(top,  #FF3030 0%,#ffffff 100%); /* IE10+ */
-background: linear-gradient(top,  #FF3030 0%,#ffffff 100%); /* W3C */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FF3030', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
- }
+.content nav { background: #444; margin-top: 3px; }
 .content nav {  line-height: 30px; padding: 0 10px; }
-.content nav a {color: black; }
-.content footer {color:red; text-align:center;}
+.content nav a { color: white; }
+.content footer { color: #FFF; text-align:center; background-color: #444; padding: 5px 0 5px 0; }
+
+/* Conteudo */
+body article.article_content { padding: 5px; }
+.article_content .message{ color: #444; font-size: 14px; font-weight: bold; padding: 5px 0 5px 0; }
+.article_content h2 { font-size: 16px; font-weight: bold; padding: 10px; }
+.article_content form label { display: inline-block; width: 150px; }
+.article_content form label.normal { width: auto; }
+.article_content form p { padding: 3px 0 3px; }
