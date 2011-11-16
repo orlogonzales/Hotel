@@ -46,7 +46,7 @@
 				</select></p>
 			<p><label for="check_in">Data de Entrada:</label><input type="text" class="use_datepicker" name="check_in" id="check_in"></p>
 			<p><label for="check_out">Data de Saida:</label><input type="text" class="use_datepicker" name="check_out" id="check_out"></p>
-			<p><label>Cafe da manhã:</label><label class="normal"><input type="radio" name="cafe" value="sim" checked="checked">Sim</label> <label class="normal"><input type="radio" name="cafe" value="nao">Não</label></p>
+			<p><label>Cafe da manhã:</label><label class="normal"><input type="radio" name="cafe" value="yes" checked="checked">Sim</label> <label class="normal"><input type="radio" name="cafe" value="no">Não</label></p>
 			<h2>Pagamento</h2>
 			<p><label for="tipo_cartao">Tipo do Cartão: </label><select id="tipo_cartao" name="tipo_cartao">
 				<option value=""></option>

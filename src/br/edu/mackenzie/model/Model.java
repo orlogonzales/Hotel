@@ -259,8 +259,8 @@ public abstract class Model {
 	 * @param	ResultSet
 	 * @throws SQLException 
 	 */
+	// TODO Verificar questão a chave primária quando for setada por um request
 	public void populate( HttpServletRequest values ) throws SQLException{
-		
 		// Obtendo as chaves
 		Set<String> key_fields = this.tableFields.keySet() ;
 		
@@ -271,12 +271,11 @@ public abstract class Model {
 		FieldDb field ;
 		while ( i.hasNext() ) {
 			field = this.tableFields.get(i.next()) ;
-			//System.out.println("Populando campo: " + field.getField());
 			if ( values.getParameter(field.getField()) != null ) {
 				field.setValue( values.getParameter(field.getField()) ) ;
+				// System.out.println( "Populando campo #" + field.getField() + "# com #" + field.getValue() + "#" ) ;
 			}
 		}
-		this._exists = true ;
 	}
 	
 	/**
@@ -362,6 +361,8 @@ public abstract class Model {
 				stmt.setString( counter , primaryKey.getValue() ) ;
 			}
 			
+			// if ( this.tableName == "quartos_tb" ) System.out.println(stmt) ;
+			
 			//Executando a query
 			//System.out.println(stmt.toString());
 			int execute = stmt.executeUpdate() ;
@@ -388,6 +389,32 @@ public abstract class Model {
 			return false ;
 		}
 		
+	}
+	
+	/**
+	 * Implementação do método toString
+	 * @author	alissonperez
+	 * @return	String
+	 */
+	public String toString(){
+		// Obtendo as chaves
+		Set<String> key_fields = this.tableFields.keySet() ;
+		
+		// Iterador
+		Iterator i = key_fields.iterator() ;
+		
+		String value = "" ;
+		
+		// Objeto field para setar os valores
+		FieldDb field ;
+		while ( i.hasNext() ) {
+			field = this.tableFields.get(i.next()) ;
+			value += field.getField() + ": " + field.getValue() + "\n" ;
+		}
+		
+		value += "'exists': " + this._exists + "\n" ;
+		
+		return value ;
 	}
 	
 }

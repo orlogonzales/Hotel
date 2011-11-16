@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import br.edu.mackenzie.controller.action.Action;
+import br.edu.mackenzie.dao.ReservaFactory;
 import br.edu.mackenzie.model.*;
 
 public class FazerReserva implements Action {
@@ -19,22 +20,10 @@ public class FazerReserva implements Action {
 	public void executar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = response.getWriter() ;
 		
-		try {
-			ArrayList<Hotel> list = Hotel.getHoteis() ;
-
-			Iterator i = list.iterator() ;
-			Hotel h ;
-			while( i.hasNext() ){
-				h = (Hotel) i.next() ;
-				out.println(h.get("hotel_id") + " - " + h.get("nome")) ;
-			}
-			System.out.println("Tamanho: " + list.size());
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Reserva r = ReservaFactory.criaReserva(request) ;
+		
+		out.println("Reserva feita, nro " + r.getPrimaryKey() ) ;
 		
 	}
 	
-}
+} 
