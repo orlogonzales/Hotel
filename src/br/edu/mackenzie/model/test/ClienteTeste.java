@@ -1,13 +1,16 @@
 package br.edu.mackenzie.model.test;
 
+import java.sql.SQLException;
+
 import br.edu.mackenzie.model.Cliente;
 
 public class ClienteTeste {
 
 	/**
 	 * @param args
+	 * @throws SQLException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 		Cliente cliente = new Cliente();
 		cliente.set("nome","Cesar");
 		cliente.set("email","cesarvargas00@gmail.com");

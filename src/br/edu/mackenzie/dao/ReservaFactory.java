@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 
 import br.edu.mackenzie.controller.action.impl.Util;
 import br.edu.mackenzie.model.Cliente;
