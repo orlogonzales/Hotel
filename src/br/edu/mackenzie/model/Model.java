@@ -116,15 +116,6 @@ public abstract class Model {
 	}
 	
 	/**
-	 * Retorna o objeto FieldDb
-	 * @author	alissonperez
-	 * @param	name	Nome do campo que queremos buscar
-	 */
-	private FieldDb _getField( String name ){
-		return this.tableFields.get( name ) ;
-	}
-	
-	/**
 	 * Construtor que inicializa a conexao, popula a lista de campos da tabela e obtem o registro
 	 * caso o id do campo seja passado
 	 * @param id
@@ -157,7 +148,7 @@ public abstract class Model {
 	 * @param	value	Valor do campo
 	 */
 	public boolean set( String name, String value ){
-		FieldDb field = this._getField(name) ;
+		FieldDb field = this.tableFields.get(name) ;
 		if ( field != null && ! field.isPrimaryKey() ) {
 			field.setValue(value) ;			
 			return true ;
@@ -171,7 +162,7 @@ public abstract class Model {
 	 * @param	name	Nome do campo
 	 */
 	public String get( String name ) {
-		FieldDb field = this._getField(name) ;
+		FieldDb field = this.tableFields.get(name) ;
 		if ( field != null ){
 			return field.getValue() ;
 		}
@@ -227,13 +218,37 @@ public abstract class Model {
 	 */
 	public boolean remove() throws SQLException {
 		if ( this._exists ) {
-			FieldDb primary_key = this._getField( this.primaryKeyName ) ;
+			FieldDb primary_key = this.tableFields.get( this.primaryKeyName ) ;
 			String sql = "delete from " + this.tableName + " where " + primary_key.getField() + "=" + primary_key.getValue() ;
 			Statement stmt = (Statement) this.connection.createStatement();
 			//System.out.println(stmt.toString());
 			return stmt.execute(sql) ;
 		}
 		return false;
+	}
+	
+	/**
+	 * Popula o Objeto atravez de um ResultSet
+	 * @author	alissonperez
+	 * @param	ResultSet
+	 * @throws SQLException 
+	 */
+	public void populate( ResultSet values ) throws SQLException{
+		
+		// Obtendo as chaves
+		Set<String> key_fields = this.tableFields.keySet() ;
+		
+		// Iterador
+		Iterator i = key_fields.iterator() ;
+		
+		// Objeto field para setar os valores
+		FieldDb field ;
+		while ( i.hasNext() ){
+			field = this.tableFields.get(i.next()) ;
+			System.out.println("Populando campo: " + field.getField());
+			field.setValue(values.getString(field.getField())) ;
+		}
+		this._exists = true ;
 	}
 	
 	/**

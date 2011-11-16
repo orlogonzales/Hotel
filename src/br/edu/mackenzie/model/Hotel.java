@@ -1,6 +1,9 @@
 package br.edu.mackenzie.model;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 
 import com.mysql.jdbc.Connection;
 
@@ -21,10 +24,24 @@ public class Hotel extends Model {
 
 	/**
 	 * Retorna a lista de hotéis
+	 * @throws SQLException 
 	 */
-	public ArrayList<Hotel> getHoteis() {
-		ConnectionFactory factory = ConnectionFactory.getInstance() ;
-		Connection connection = (Connection) factory.getConnection() ;
+	public static ArrayList<Hotel> getHoteis() throws SQLException {
+		ResultSet rs = ConnectionFactory.executeQuery("SELECT * FROM hoteis_tb") ;
 		
+		// Armazena a lista de hoteis
+		ArrayList<Hotel> list_hotels = new ArrayList<Hotel>() ;
+		
+		Hotel field ;
+		
+		while ( rs.next() ) {
+			field = new Hotel() ;
+			field.populate(rs) ;
+			list_hotels.add(field) ;
+		}
+		
+		rs.close() ;
+		
+		return list_hotels ;
 	}
 }
