@@ -37,7 +37,7 @@ CREATE TABLE `clientes_tb` (
   `validadeCartao` varchar(45) DEFAULT NULL,
   `cliente_tbcol` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`cliente_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -46,6 +46,7 @@ CREATE TABLE `clientes_tb` (
 
 LOCK TABLES `clientes_tb` WRITE;
 /*!40000 ALTER TABLE `clientes_tb` DISABLE KEYS */;
+INSERT INTO `clientes_tb` VALUES (1,'Alisson','Estr. da Batalha','474747','sÃ£o Roque','2091208','SP','Brasil','alissonperez@gmail.com',NULL,NULL,NULL,NULL),(2,'Alisson','Estr. da Batalha','474747','sÃ£o Roque','2091208','SP','Brasil','alissonperez@gmail.com',NULL,NULL,NULL,NULL),(3,'Alisson','Estr. da Batalha','474747','sÃ£o Roque','2091208','SP','Brasil','alissonperez@gmail.com',NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `clientes_tb` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -60,7 +61,7 @@ CREATE TABLE `hoteis_tb` (
   `hotel_id` int(11) NOT NULL AUTO_INCREMENT,
   `nome` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`hotel_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -69,7 +70,7 @@ CREATE TABLE `hoteis_tb` (
 
 LOCK TABLES `hoteis_tb` WRITE;
 /*!40000 ALTER TABLE `hoteis_tb` DISABLE KEYS */;
-INSERT INTO `hoteis_tb` VALUES (1,'Formula 1 - Alphaville'),(2,'Formula 1 - Santa Efigênia'),(3,'Formula 1 - Vila Guilherme');
+INSERT INTO `hoteis_tb` VALUES (1,'Formula 1 - Alphaville'),(2,'Formula 1 - Santa Efigênia'),(3,'Formula 1 - Vila Guilherme'),(4,'Mackenzie Hotel - Sao Paulo'),(5,'Mackenzie Hotel - Campinas'),(6,'Mackenzie Hotel - RJ');
 /*!40000 ALTER TABLE `hoteis_tb` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -88,10 +89,11 @@ CREATE TABLE `quartos_tb` (
   `banheira` enum('yes','no') DEFAULT 'no',
   `numero_hospedes` int(11) NOT NULL,
   `tipo` varchar(45) NOT NULL,
+  `ocupado` enum('yes','no') DEFAULT 'no',
   PRIMARY KEY (`quarto_id`),
   KEY `hotel_id` (`hotel_id`),
   CONSTRAINT `quartos_tb_ibfk_1` FOREIGN KEY (`hotel_id`) REFERENCES `hoteis_tb` (`hotel_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -100,6 +102,7 @@ CREATE TABLE `quartos_tb` (
 
 LOCK TABLES `quartos_tb` WRITE;
 /*!40000 ALTER TABLE `quartos_tb` DISABLE KEYS */;
+INSERT INTO `quartos_tb` VALUES (1,4,140,'yes','yes',3,'comum','no'),(2,4,180,'yes','yes',4,'master','no'),(3,4,180,'yes','yes',4,'master','no'),(4,4,180,'yes','yes',4,'master','no'),(5,4,140,'yes','yes',3,'comum','no'),(6,4,140,'yes','yes',3,'comum','no'),(7,4,140,'yes','yes',3,'comum','no'),(8,4,200,'yes','yes',5,'presidencial','no'),(9,4,200,'yes','yes',5,'presidencial','no'),(10,4,200,'yes','yes',5,'presidencial','no'),(12,4,90,'yes','yes',1,'alone','no'),(13,4,90,'yes','yes',1,'alone','no'),(14,4,90,'yes','yes',1,'alone','no'),(15,5,90,'yes','yes',1,'alone','no'),(16,5,90,'yes','yes',1,'alone','no'),(17,5,90,'yes','yes',1,'alone','no'),(18,5,90,'yes','yes',1,'alone','no'),(19,5,90,'yes','yes',1,'alone','no'),(20,5,200,'yes','yes',5,'presidencial','no'),(21,5,200,'yes','yes',5,'presidencial','no'),(22,5,200,'yes','yes',5,'presidencial','no'),(23,5,200,'yes','yes',5,'presidencial','no'),(24,5,200,'yes','yes',5,'presidencial','no'),(25,5,140,'yes','yes',3,'commum','no'),(26,5,140,'yes','yes',3,'commum','no'),(27,5,140,'yes','yes',3,'commum','no'),(28,5,140,'yes','yes',3,'commum','no'),(29,5,140,'yes','yes',3,'commum','no'),(30,5,140,'yes','yes',3,'commum','no'),(31,5,140,'yes','yes',3,'commum','no'),(32,5,140,'yes','yes',3,'commum','no'),(33,5,180,'yes','yes',4,'master','no'),(34,5,180,'yes','yes',4,'master','no'),(35,5,180,'yes','yes',4,'master','no'),(36,5,180,'yes','yes',4,'master','no'),(37,5,180,'yes','yes',4,'master','no'),(38,5,180,'yes','yes',4,'master','no'),(39,6,90,'yes','yes',1,'alone','no'),(40,6,90,'yes','yes',1,'alone','no'),(41,6,90,'yes','yes',1,'alone','no'),(42,6,90,'yes','yes',1,'alone','no'),(43,6,90,'yes','yes',1,'alone','no'),(44,6,200,'yes','yes',5,'presidencial','no'),(45,6,200,'yes','yes',5,'presidencial','no'),(46,6,200,'yes','yes',5,'presidencial','no'),(47,6,200,'yes','yes',5,'presidencial','no'),(48,6,200,'yes','yes',5,'presidencial','no'),(49,6,140,'yes','yes',3,'commum','no'),(50,6,140,'yes','yes',3,'commum','no'),(51,6,140,'yes','yes',3,'commum','no'),(52,6,140,'yes','yes',3,'commum','no'),(53,6,140,'yes','yes',3,'commum','no'),(54,6,140,'yes','yes',3,'commum','no'),(55,6,140,'yes','yes',3,'commum','no'),(56,6,140,'yes','yes',3,'commum','no'),(57,6,180,'yes','yes',4,'master','no'),(58,6,180,'yes','yes',4,'master','no'),(59,6,180,'yes','yes',4,'master','no'),(60,6,180,'yes','yes',4,'master','no'),(61,6,180,'yes','yes',4,'master','no'),(62,6,180,'yes','yes',4,'master','no');
 /*!40000 ALTER TABLE `quartos_tb` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -146,4 +149,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2011-11-16  0:38:05
+-- Dump completed on 2011-11-16 17:22:51
