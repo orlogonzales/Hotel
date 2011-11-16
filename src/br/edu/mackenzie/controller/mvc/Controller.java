@@ -15,11 +15,11 @@ public class Controller extends HttpServlet {
 
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String logica = request.getParameter("action");
-		String pacoteBase = "br.edu.mackenzie.controller.action.impl.";
+		String logica = request.getParameter("action") ;
+		String pacoteBase = "br.edu.mackenzie.controller.action.impl." ;
 		try {
-			Action action = (Action) Class.forName(pacoteBase+logica).newInstance();
-			action.executar(request, response);
+			Action action = (Action) Class.forName(pacoteBase+logica).newInstance() ;
+			action.executar(request, response) ;
 		} catch (ClassNotFoundException e) {
 			System.out.println("Action nao existe: " + pacoteBase + logica);
 			e.printStackTrace();

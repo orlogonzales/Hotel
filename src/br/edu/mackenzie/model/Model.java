@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import br.edu.mackenzie.dao.ConnectionFactory;
 import br.edu.mackenzie.dao.FieldDb;
 
@@ -245,8 +247,34 @@ public abstract class Model {
 		FieldDb field ;
 		while ( i.hasNext() ){
 			field = this.tableFields.get(i.next()) ;
-			System.out.println("Populando campo: " + field.getField());
+			//System.out.println("Populando campo: " + field.getField());
 			field.setValue(values.getString(field.getField())) ;
+		}
+		this._exists = true ;
+	}
+	
+	/**
+	 * Popula o Objeto atravez de um Request
+	 * @author	alissonperez
+	 * @param	ResultSet
+	 * @throws SQLException 
+	 */
+	public void populate( HttpServletRequest values ) throws SQLException{
+		
+		// Obtendo as chaves
+		Set<String> key_fields = this.tableFields.keySet() ;
+		
+		// Iterador
+		Iterator i = key_fields.iterator() ;
+		
+		// Objeto field para setar os valores
+		FieldDb field ;
+		while ( i.hasNext() ) {
+			field = this.tableFields.get(i.next()) ;
+			//System.out.println("Populando campo: " + field.getField());
+			if ( values.getParameter(field.getField()) != null ) {
+				field.setValue( values.getParameter(field.getField()) ) ;
+			}
 		}
 		this._exists = true ;
 	}
