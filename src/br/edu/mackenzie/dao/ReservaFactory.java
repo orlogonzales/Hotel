@@ -59,12 +59,13 @@ public class ReservaFactory {
 					reserva.set("check_out", check_out) ;
 				} else {
 					error = true ;
-					ReservaFactory.messages.add("Dada de entrada incorreta!") ;
+					ReservaFactory.messages.add("Dada de saida incorreta!") ;
 				}
 				
 				// Obtendo o Hotel
-				if ( request.getParameter("hotel") != null ) {
-					Hotel hotel = new Hotel(Integer.parseInt(request.getParameter("hotel"))) ;
+				Hotel hotel = null ;
+				if ( request.getParameter("hotel") != null && request.getParameter("hotel") != "" ) {
+					hotel = new Hotel(Integer.parseInt(request.getParameter("hotel"))) ;
 					if ( hotel.exists() ) {
 						reserva.set("hotel_id", hotel.getPrimaryKey()) ;
 					}
@@ -74,7 +75,7 @@ public class ReservaFactory {
 				
 				// Obtendo o Quarto
 				Quarto quarto = null ;
-				if ( ! error ) {
+				if ( ! error && request.getParameter("tipo_quarto") != null && request.getParameter("tipo_quarto") != "" ) {
 					quarto = Quarto.getQuartoLivre(Integer.parseInt(reserva.get("hotel_id")), request.getParameter("tipo_quarto")) ;
 					if ( quarto != null ) {
 						reserva.set("quarto_id", quarto.getPrimaryKey()) ;
@@ -83,6 +84,10 @@ public class ReservaFactory {
 						error = true ;
 						ReservaFactory.messages.add("Quarto não disponível para o Hotel selecionado, tente outro") ;
 					}
+				}
+				else {
+					error = true ;
+					messages.add("Selecione um quarto");
 				}
 				
 				if ( ! error ){
@@ -97,9 +102,6 @@ public class ReservaFactory {
 						error = true ;
 						ReservaFactory.messages.add("Ouve um erro ao gravar a reserva") ;
 					}
-				}
-				else {
-					System.out.println(messages.toString());
 				}
 			}
 			
