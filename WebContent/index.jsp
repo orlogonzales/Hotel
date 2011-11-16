@@ -10,7 +10,9 @@
 	</head>
 	<body>
 		<c:import url="cabecalho.jsp"/>
-			<p>Bem-Vindo ao site do hotel Mackenzie</p><br><br><br><br>
+			<article class="article_content">
+			<h2>Bem-Vindo ao site do hotel Mackenzie</h2>
+			</article>
 		<c:import url="rodape.jsp"/>
 	</body>
 </html>

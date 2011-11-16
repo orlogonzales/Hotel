@@ -20,9 +20,19 @@ public class FazerReserva implements Action {
 	public void executar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out = response.getWriter() ;
 		
+		// Factory que faz a reserva
 		Reserva r = ReservaFactory.criaReserva(request) ;
 		
-		out.println("Reserva feita, nro " + r.getPrimaryKey() ) ;
+		if ( r != null ) {
+			request.setAttribute( "success" , "yes" ) ;
+			request.setAttribute( "reserva_id" , r.getPrimaryKey() ) ;
+		}
+		else {
+			request.setAttribute( "success" , "no" ) ;
+			request.setAttribute("messages", ReservaFactory.messages ); // Setando Lista de nomes	
+		}
+		
+		request.getRequestDispatcher("reserva_resultado.jsp").forward(request, response) ;
 		
 	}
 	

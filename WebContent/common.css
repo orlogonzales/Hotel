@@ -65,8 +65,13 @@ table {
 
 /* Conteudo */
 body article.article_content { padding: 5px; }
-.article_content .message{ color: #444; font-size: 14px; font-weight: bold; padding: 5px 0 5px 0; }
+.article_content .message { color: #444; font-size: 14px; font-weight: bold; padding: 5px 0 5px 0; }
+.article_content .warning { color: #FF8C00; }
+.article_content .success { color: #238E23; }
 .article_content h2 { font-size: 16px; font-weight: bold; padding: 10px; }
 .article_content form label { display: inline-block; width: 150px; }
 .article_content form label.normal { width: auto; }
 .article_content form p { padding: 3px 0 3px; }
+
+.article_content div.reserva_num { padding: 10px 0 10px 5px; font-size: 26px; color: #FF8C00; background-color: #F0FFFF; }
+.article_content div.reserva_num span { font-weight: bold; font-size: 29px; }
