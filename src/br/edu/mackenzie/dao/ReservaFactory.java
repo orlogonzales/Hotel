@@ -109,7 +109,7 @@ public class ReservaFactory {
 			e.printStackTrace();
 		}
 		
-		return reserva ;
+		return ! error ? reserva : null ;
 		
 	}
 	

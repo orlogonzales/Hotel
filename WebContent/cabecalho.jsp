@@ -8,6 +8,7 @@
 <nav>
 <a href="index.jsp">Home</a>  |
 <a href="reservas.jsp">Fazer Reserva</a>  |
-<a href="index.jsp">Sobre</a>
+<a href="index.jsp">Sobre</a> |
+<a href="listar.jsp">Listar Reservas</a>	|
 </nav>
 
