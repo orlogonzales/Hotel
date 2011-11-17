@@ -27,45 +27,32 @@ public class ListaReserva implements Action {
 
 		try {
 			// Popula Reserva
-			Reserva reserva = new Reserva();
-			ResultSet valuesReserva = ConnectionFactory
-					.executeQuery("select * from reservas_tb where reserva_id ="
-							+ id + ";");
-			while (valuesReserva.next()) {
-				reserva.populate(valuesReserva);
-			}
+			Reserva reserva = new Reserva(Integer.parseInt(id));
+			System.out.println(reserva);
+			if (!reserva.exists() || reserva.get("ocupado").equals("yes"))
+				request.setAttribute("existe", false);
+			else {
+				request.setAttribute("existe", true);
+				// Popula Hotel
+				Hotel hotel = new Hotel(Integer.parseInt(reserva.get("hotel_id")));
 
-			// Popula Hotel
-			Hotel hotel = new Hotel();
-			ResultSet valuesHotel = ConnectionFactory
-					.executeQuery("select * from hoteis_tb where hotel_id ="
-							+ reserva.get("hotel_id") + ";");
-			while (valuesHotel.next()) {
-				hotel.populate(valuesHotel);
-			}
+				// Popula Cliente
+				Cliente cliente = new Cliente(Integer.parseInt(reserva.get("cliente_id")));
 
-			// Popula Cliente
-			Cliente cliente = new Cliente();
-			ResultSet valuesCliente = ConnectionFactory
-					.executeQuery("select * from clientes_tb where cliente_id ="
-							+ reserva.get("cliente_id") + ";");
-			while (valuesCliente.next()) {
-				cliente.populate(valuesCliente);
-			}
-
-			// Transforma pra Date de volta
+				// Transforma pra Date de volta
 				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 				Date dataIn = df.parse((reserva.get("check_in")));
 				Date dataOut = df.parse((reserva.get("check_out")));
-			
-			// Set o request
-			request.setAttribute("id", reserva.get("reserva_id"));
-			request.setAttribute("hotel", hotel.get("nome"));
-			request.setAttribute("cliente", cliente.get("nome"));
-			request.setAttribute("quarto", reserva.get("quarto_id"));
-			request.setAttribute("check_in", dataIn);
-			request.setAttribute("check_out", dataOut);
-			request.setAttribute("cafe", reserva.get("cafe"));
+
+				// Set o request
+				request.setAttribute("id", reserva.get("reserva_id"));
+				request.setAttribute("hotel", hotel.get("nome"));
+				request.setAttribute("cliente", cliente.get("nome"));
+				request.setAttribute("quarto", reserva.get("quarto_id"));
+				request.setAttribute("check_in", dataIn);
+				request.setAttribute("check_out", dataOut);
+				request.setAttribute("cafe", reserva.get("cafe"));
+			}
 
 		} catch (SQLException e) {
 			System.out.println("ERRO!");
@@ -73,9 +60,11 @@ public class ListaReserva implements Action {
 		} catch (ParseException a) {
 			a.printStackTrace();
 			System.out.println("Erro na convers‹o de data");
-		}catch(NullPointerException b){
+		} catch (NullPointerException b) {
 			System.out.println("NullPointerException!");
 			b.printStackTrace();
+		} catch (NumberFormatException c){
+			System.out.println("Parse EXCEPTION!");
 		}
 
 		RequestDispatcher rd = request

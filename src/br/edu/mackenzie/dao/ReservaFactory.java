@@ -92,7 +92,8 @@ public class ReservaFactory {
 				if ( ! error ){
 					cliente.save() ;
 					reserva.set("cliente_id", cliente.getPrimaryKey()) ;
-					System.out.println(reserva);
+				//	System.out.println(reserva);
+					reserva.set("ocupado", "no");
 					if ( reserva.save() ) {
 						quarto.set("reservado", "yes") ;
 						quarto.save() ;
