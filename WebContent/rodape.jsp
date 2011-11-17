@@ -5,6 +5,6 @@
 
 
 	<footer>
-		Copyright Joanete Produções 2011
+		Copyright Mack06G Produções 2011
 	</footer>
 </div>

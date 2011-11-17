@@ -11,7 +11,7 @@ public class Reserva extends Model {
 	public Reserva(int id) throws SQLException {
 		super(id);
 	}
-
+	
 	@Override
 	protected String getTableName() { return "reservas_tb" ; }
 }

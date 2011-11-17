@@ -75,3 +75,5 @@ body article.article_content { padding: 5px; }
 
 .article_content div.reserva_num { padding: 10px 0 10px 5px; font-size: 26px; color: #FF8C00; background-color: #F0FFFF; }
 .article_content div.reserva_num span { font-weight: bold; font-size: 29px; }
+table {border: thick;}
+td { padding: 5px; border: medium;}

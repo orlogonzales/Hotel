@@ -8,29 +8,29 @@
 <head>
 <link type="text/css" href="common.css" rel="stylesheet">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Lista de Reservas</title>
+<title>Listar Reservas</title>
 </head>
 <body>
 
 	<c:import url="cabecalho.jsp" />
-	<h3>Lista de Reservas</h3>
+	<h1>Digite o id da sua Reserva:</h1>
 	<br>
-	<table>
-	<tr>
-		<%
-			List<Reserva> reservas = Reserva.getReservas() ;
-			for ( Reserva reserva : reservas ) {%>
-			<td>
-				<%=reserva.get("hotel_id")%>
-				<%=reserva.get("reserva_id")%>
-				<%=reserva.get("quarto_id")%>
-				<%=reserva.get("check_in")%>
-				<%=reserva.get("check_out")%>
-				<%=reserva.get("cafe")%>
-			</td>
-		<%}%>
-	</tr>
-	</table>
+	<form action="controller" name="listaReserva" method="post">
+		<input type="text" name="idReserva">
+		<input type="hidden" name="action" value="ListaReserva">
+		<input type="submit" value="Buscar">
+	</form>
+<table>
+<tr>
+<td>ID</td>
+<td>Cliente</td>
+<td>Hotel</td>
+<td>Quarto</td>
+<td>Check-In</td>
+<td>Check-Out</td>
+<td>Café</td>
+</tr>
+</table>
 	<c:import url="rodape.jsp" />
 </body>
 </html>

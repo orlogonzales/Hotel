@@ -31,25 +31,31 @@ public class ConnectionFactory {
 			throw new SQLException(e);
 		}
 
-		return DriverManager.getConnection("jdbc:mysql://localhost/hotel_db", "root", "123");
+		return DriverManager.getConnection("jdbc:mysql://localhost/hotel_db", "root", "");
 	}
 	
 	/**
 	 * Constroi um ResultSet para consulta e retorna o mesmo baseado na query passada
 	 * @throws SQLException 
 	 */
-	public static ResultSet executeQuery(String sql) throws SQLException{
+	public static ResultSet executeQuery(String sql) {
 		ConnectionFactory factory = ConnectionFactory.getInstance() ;
 		
 		// Cria a conexão
-		Connection connection = (Connection) factory.getConnection() ;
+		Connection connection;
+		try {
+			connection = (Connection) factory.getConnection();
+			// Cria o Statement
+			Statement stmt = connection.createStatement() ;
+			
+			ResultSet rs = stmt.executeQuery(sql) ;
+			
+			return rs ;
+		} catch (SQLException e) {
+			System.out.println("Erro na query!!");
+		}
+		return null;
 		
-		// Cria o Statement
-		Statement stmt = connection.createStatement() ;
-		
-		ResultSet rs = stmt.executeQuery(sql) ;
-		
-		return rs ;
 	}
 
 }
