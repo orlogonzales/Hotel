@@ -11,35 +11,37 @@
 <title>Listar Reservas</title>
 </head>
 <body>
-
-	<c:import url="cabecalho.jsp" />
-	<h1>Digite o id da sua Reserva:</h1>
-	<br>
-	<form action="controller" name="listaReserva" method="post">
-		<input type="text" name="idReserva">
-		<input type="hidden" name="action" value="ListaReserva">
-		<input type="submit" value="Buscar">
-	</form>
+		<c:import url="cabecalho.jsp" />
+		<article class="article_content">
+			<h1>Digite o id da sua Reserva:</h1>
+				<br>
+			<form action="controller" name="listaReserva" method="post">
+				<input type="text" name="idReserva">
+				<input type="hidden" name="action" value="ListaReserva">
+				<input type="submit" value="Buscar">
+			</form>
 <table>
 <tr>
-<td>ID</td>
-<td>Cliente</td>
-<td>Hotel</td>
-<td>Quarto</td>
-<td>Check-In</td>
-<td>Check-Out</td>
-<td>Café</td>
+<th>ID</th>
+<th>Cliente</th>
+<th>Hotel</th>
+<th>Quarto</th>
+<th>Check-In</th>
+<th>Check-Out</th>
+<th>Café</th>
 </tr>
 <tr>
 <td>${id}</td>
 <td>${cliente}</td>
 <td>${hotel}</td>
 <td>${quarto}</td>
-<td>Check-In</td>
-<td>Check-Out</td>
-<td></td>
+<td><fmt:formatDate pattern="dd/MM/yyyy" value="${check_in}"/></td>
+<td><fmt:formatDate pattern="dd/MM/yyyy" value="${check_out}"/></td>
+<td>${cafe }</td>
 </tr>
 </table>
+</article>
 	<c:import url="rodape.jsp" />
+	
 </body>
 </html>
