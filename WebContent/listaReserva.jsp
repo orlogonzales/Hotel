@@ -30,6 +30,15 @@
 <td>Check-Out</td>
 <td>Café</td>
 </tr>
+<tr>
+<td>${id}</td>
+<td>${cliente}</td>
+<td>${hotel}</td>
+<td>${quarto}</td>
+<td>Check-In</td>
+<td>Check-Out</td>
+<td></td>
+</tr>
 </table>
 	<c:import url="rodape.jsp" />
 </body>

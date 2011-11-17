@@ -25,9 +25,9 @@ public class ListaReserva implements Action {
 			ResultSet values = ConnectionFactory
 					.executeQuery("select * from reservas_tb where reserva_id ="
 							+ id + ";");
-			
+			while (values.next()) {
 				reserva.populate(values);
-				
+			}
 			request.setAttribute("id", reserva.get("reserva_id"));
 			request.setAttribute("hotel", reserva.get("hotel_id"));
 			request.setAttribute("cliente", reserva.get("cliente_id"));
