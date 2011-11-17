@@ -26,7 +26,7 @@ public class FazerReserva implements Action {
 		}
 		else {
 			request.setAttribute( "success" , "no" ) ;
-			request.setAttribute("messages", ReservaFactory.messages ); // Setando Lista de nomes	
+			request.setAttribute("messages" , ReservaFactory.messages ); // Setando Lista de nomes	
 		}
 		
 		request.getRequestDispatcher("reserva_resultado.jsp").forward(request, response) ;
